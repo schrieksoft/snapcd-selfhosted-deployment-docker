@@ -1,0 +1,11 @@
+# Filled-in configs (contain secrets / signing keys / SP credentials)
+*/appsettings.Production.json
+
+
+# SSH private keys - never commit these
+config/runner/id_rsa
+config/runner/id_ed25519
+config/runner/*.pem
+
+# Override file
+.env

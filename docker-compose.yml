@@ -1,0 +1,91 @@
+services:
+  snapcd-sql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: snapcd-sql
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "myPassw0rd"
+      MSSQL_PID: "Express"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssqldata:/var/opt/mssql
+    networks:
+      - snapcd-net
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P "myPassw0rd" -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  snapcd-redis:
+    image: redis:7-alpine
+    container_name: snapcd-redis
+    restart: unless-stopped
+    networks:
+      - snapcd-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  snapcd-server:
+    image: ghcr.io/schrieksoft/snapcd/snapcd-server:1.0.1
+    container_name: snapcd-server
+    restart: unless-stopped
+    depends_on:
+      snapcd-sql:
+        condition: service_healthy
+      snapcd-redis:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ASPNETCORE_URLS: "http://0.0.0.0:8080"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config/server/appsettings.json:/app/appsettings.json:ro
+      # Optional: layer environment-specific overrides on top of the committed defaults.
+      # Create config/server/appsettings.Production.json (gitignored) and uncomment:
+      # - ./config/server/appsettings.Production.json:/app/appsettings.Production.json:ro
+    networks:
+      - snapcd-net
+
+  snapcd-runner:
+    image: ghcr.io/schrieksoft/snapcd/snapcd-runner-azure:1.0.1
+    container_name: snapcd-runner
+    restart: unless-stopped
+    depends_on:
+      - snapcd-server
+    entrypoint: ["./SnapCd.Runner", "--urls", "http://0.0.0.0:5001"]
+    volumes:
+      - ./config/runner/appsettings.json:/app/appsettings.json:ro
+      # Optional: layer environment-specific overrides on top of the committed defaults.
+      # Create config/runner/appsettings.Production.json (gitignored) and uncomment:
+      # - ./config/runner/appsettings.Production.json:/app/appsettings.Production.json:ro
+      - runner-data:/app/runnerdata
+
+      # Pre-approved hooks directory (optional)
+      - ./config/runner/preapproved-hooks:/app/preapproved-hooks:ro
+
+      # SSH keys for private Git repositories (optional)
+      - ./config/runner/known_hosts:/root/.ssh/known_hosts:ro
+      - ./config/runner/id_rsa:/root/.ssh/id_rsa:ro
+
+      # Terraform/OpenTofu binaries from host (pick one or both, edit path as needed)
+      - /usr/local/bin/terraform:/usr/local/bin/terraform:ro
+      - /usr/local/bin/tofu:/usr/local/bin/tofu:ro
+    networks:
+      - snapcd-net
+
+volumes:
+  mssqldata:
+  runner-data:
+
+networks:
+  snapcd-net:
