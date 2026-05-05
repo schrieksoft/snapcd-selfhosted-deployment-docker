@@ -14,13 +14,12 @@
     },
     {
       "groupName": "snapcd",
-      "commitMessageTopic": "snapcd packages and images",
+      "commitMessageTopic": "snapcd images",
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true,
       "ignoreTests": true,
       "matchPackageNames": [
-        "/^SnapCd\\./",
         "/^ghcr\\.io\\/schrieksoft\\/snapcd/"
       ],
       "enabled": true
