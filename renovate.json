@@ -15,7 +15,7 @@
     {
       "groupName": "snapcd",
       "commitMessageTopic": "snapcd packages and images",
-      "automerge": false,
+      "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true,
       "ignoreTests": true,
