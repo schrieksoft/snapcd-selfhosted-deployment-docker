@@ -4,7 +4,7 @@ This guide deploys a complete self-hosted SnapCD stack using Docker Compose:
 
 - **SQL Server** — application database and Service Bus transport (single instance, single DB)
 - **Redis** — distributed cache used by the Server
-- **SnapCD Server** — the control plane (Web UI, API, orchestration, license service)
+- **Snap CD Server** — the control plane (Web UI, API, orchestration, license service)
 - **SnapCD Runner** — one execution agent that connects to the Server above
 
 For background on the editions, licensing, and limits, see the [self-hosting docs](https://docs.snapcd.io/self-hosting).
