@@ -12,9 +12,16 @@ For background on the editions, licensing, and limits, see the [self-hosting doc
 ## Prerequisites
 
 - Docker and Docker Compose installed
-- Outbound network access to:
-  - `snapcd.io` (only required if you want to apply an Enterprise license)
-- Terraform and/or OpenTofu binaries installed on the host (mounted into the runner container)
+- Outbound network access to `snapcd.io` (only required if you want to apply an Enterprise license)
+- Terraform and/or OpenTofu binaries installed on the host (these will be mounted into the runner container). The runner container expects `terraform` and/or `tofu` to be available at `/usr/local/bin/`. The compose file bind-mounts those paths from your host. Update the paths in `docker-compose.yml` if your binaries live elsewhere:
+
+```bash
+which terraform
+which tofu
+```
+
+> Snap CD strives to support the latest available version of `tofu`. For `terraform` we design for binaries up to release [1.5.7](https://github.com/hashicorp/terraform/releases/tag/v1.5.7), the final release under the [Mozilla Public License 2.0](https://github.com/hashicorp/terraform/blob/v1.5.7/LICENSE).
+
 
 ## Quickstart
 
@@ -28,7 +35,18 @@ docker compose up -d
 docker compose logs -f
 ```
 
-Then visit the Dashboard at `http://localhost:8080` and log in with the pre-seeded credentials.
+Then visit the Dashboard at:
+
+http://localhost:8080
+
+The default preseeded credentials are:
+```json
+"Email": "admin@preseeded.io",
+"Password": "Admin#123"
+```
+
+Next consider deploying this [sample deployment](https://github.com/snapcd-samples/sample-deployment), which uses the [Snap CD Terraform Provider](https://registry.terraform.io/providers/schrieksoft/snapcd/latest/docs) to deploy a sample project consisting of various inter-depenent Modules.
+
 
 ## Configuration
 
@@ -143,16 +161,6 @@ The bundled `config/runner/known_hosts` already contains GitHub and GitLab finge
 ssh-keyscan your-git-server.com >> config/runner/known_hosts
 ```
 
-### Engine (Terraform / OpenTofu) Binaries
-
-The runner container expects `terraform` and/or `tofu` to be available at `/usr/local/bin/`. The compose file bind-mounts those paths from your host. Update the paths in `docker-compose.yml` if your binaries live elsewhere:
-
-```bash
-which terraform
-which tofu
-```
-
-> Snap CD strives to support the latest available version of `tofu`. For `terraform` we design for binaries up to release [1.5.7](https://github.com/hashicorp/terraform/releases/tag/v1.5.7), the final release under the [Mozilla Public License 2.0](https://github.com/hashicorp/terraform/blob/v1.5.7/LICENSE).
 
 ### Pre-approved Hooks (Optional)
 
