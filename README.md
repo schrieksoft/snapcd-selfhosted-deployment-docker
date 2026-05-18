@@ -13,15 +13,6 @@ For background on the editions, licensing, and limits, see the [self-hosting doc
 
 - Docker and Docker Compose installed
 - Outbound network access to `snapcd.io` (only required if you want to apply an Enterprise license)
-- Terraform and/or OpenTofu binaries installed on the host (these will be mounted into the runner container). The runner container expects `terraform` and/or `tofu` to be available at `/usr/local/bin/`. The compose file bind-mounts those paths from your host. Update the paths in `docker-compose.yml` if your binaries live elsewhere:
-
-```bash
-which terraform
-which tofu
-```
-
-> Snap CD strives to support the latest available version of `tofu`. For `terraform` we design for binaries up to release [1.5.7](https://github.com/hashicorp/terraform/releases/tag/v1.5.7), the final release under the [Mozilla Public License 2.0](https://github.com/hashicorp/terraform/blob/v1.5.7/LICENSE).
-
 
 ## Quickstart
 
@@ -40,13 +31,14 @@ Then visit the Dashboard at:
 http://localhost:8080
 
 The default preseeded credentials are:
-```json
-"Email": "admin@preseeded.io",
-"Password": "Admin#123"
+```yaml
+Email: admin@preseeded.io
+Password: Admin#123
 ```
 
-Next consider deploying this [sample deployment](https://github.com/snapcd-samples/sample-deployment), which uses the [Snap CD Terraform Provider](https://registry.terraform.io/providers/schrieksoft/snapcd/latest/docs) to deploy a sample project consisting of various inter-depenent Modules.
+## Sample Project
 
+Next consider deploying this [sample deployment](https://github.com/snapcd-samples/sample-deployment), which uses the [Snap CD Terraform Provider](https://registry.terraform.io/providers/schrieksoft/snapcd/latest/docs) to deploy a sample project consisting of various inter-depenent Modules.
 
 ## Configuration
 
@@ -203,7 +195,7 @@ Re-run when the login expires. For other clouds, set credentials as environment 
 
 ## Limits and Licensing
 
-The Server starts in **Community Edition**: 2 stacks, 2 runners, 20 modules, no SSO, no Turnstile. To raise limits, apply an Enterprise license key from `https://snapcd.io/Subscription` via the Dashboard's `/License` page. See the [self-hosting docs](https://docs.snapcd.io/self-hosting) for details.
+The Server starts in **Community Edition**. Apply an Enterprise license key from `https://snapcd.io/Subscription` via the Dashboard's `/License` page. See the [self-hosting docs](https://docs.snapcd.io/self-hosting) for details.
 
 ## Troubleshooting
 

@@ -50,9 +50,10 @@ services:
       - "8080:8080"
     volumes:
       - ./config/server/appsettings.json:/app/appsettings.json:ro
-      # Optional: layer environment-specific overrides on top of the committed defaults.
-      # Create config/server/appsettings.Production.json (gitignored) and uncomment:
-      # - ./config/server/appsettings.Production.json:/app/appsettings.Production.json:ro
+
+      # (Optional) layer environment-specific overrides on top of the committed defaults. Create config/server/appsettings.Production.json (gitignored):
+      - ./config/server/appsettings.Production.json:/app/appsettings.Production.json:ro
+
     networks:
       - snapcd-net
 
@@ -63,23 +64,23 @@ services:
     depends_on:
       - snapcd-server
     entrypoint: ["./SnapCd.Runner", "--urls", "http://0.0.0.0:5001"]
-    volumes:
-      - ./config/runner/appsettings.json:/app/appsettings.json:ro
-      # Optional: layer environment-specific overrides on top of the committed defaults.
-      # Create config/runner/appsettings.Production.json (gitignored) and uncomment:
-      # - ./config/runner/appsettings.Production.json:/app/appsettings.Production.json:ro
+    volumes:      
       - runner-data:/app/runnerdata
+      - ./config/runner/appsettings.json:/app/appsettings.json:ro
 
-      # Pre-approved hooks directory (optional)
+      ## (Optional)  layer environment-specific overrides on top of the committed defaults. Create config/runner/appsettings.Production.json (gitignored).
+      # - ./config/runner/appsettings.Production.json:/app/appsettings.Production.json:ro
+
+      ## (Optional) Pre-approved hooks directory
       - ./config/runner/preapproved-hooks:/app/preapproved-hooks:ro
-
-      # SSH keys for private Git repositories (optional)
-      - ./config/runner/known_hosts:/root/.ssh/known_hosts:ro
+      
+      ## (Optional) SSH keys for private Git repositories 
       - ./config/runner/id_rsa:/root/.ssh/id_rsa:ro
+      - ./config/runner/known_hosts:/root/.ssh/known_hosts:ro
 
-      # Terraform/OpenTofu binaries from host (pick one or both, edit path as needed)
-      - /usr/local/bin/terraform:/usr/local/bin/terraform:ro
-      - /usr/local/bin/tofu:/usr/local/bin/tofu:ro
+      ## (Optional) Terraform/OpenTofu binaries from host. These would override the pre-bundled terraform (1.5.7) and tofu (1.12.0) binaries
+      # - /usr/local/bin/terraform:/usr/local/bin/terraform:ro
+      # - /usr/local/bin/tofu:/usr/local/bin/tofu:ro
     networks:
       - snapcd-net
 
